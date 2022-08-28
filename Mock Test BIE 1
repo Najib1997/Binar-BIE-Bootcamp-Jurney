@@ -66,4 +66,45 @@ SELECT  product_id
  
 #Tabel Customer (Tabel ini sudah memiliki kualitas data yang baik sehingga tidak perlu diperbaiki)
 
+#Query terkait soal yang diberikan
+#1. Jumlah seluruh produk yang terjual
+SELECT sum(Quantity) as Produk_Terjual FROM `bie-wave-6.Current_Detail_Data.Orders_clean`
 
+#2. Jumlah unique customer yang telah memesan produk
+SELECT count (distinct(Customer_ID)) as Jumlah_Unik_Customer FROM `bie-wave-6.Current_Detail_Data.Orders_clean`
+
+#3. Rata-rata profit dari seluruh order (dalam mata uang) [Disini saya mengasumsikan nilai profit dalam US dolar dan ingin dirubah menjadi rupiah dimana pada saat jawaban ini dibuat 1 US dolar = 14,852.60 rupiah
+SELECT Avg(Profit)*14852.60 as Rerata_Profit_Rp FROM `bie-wave-6.Current_Detail_Data.Orders_clean` 
+
+#4. Berapa discount terkecil dari seluruh order
+SELECT Discount as Discount_Terkecil FROM `bie-wave-6.Current_Detail_Data.Orders_clean` 
+where Discount > 0.0
+order by 1 asc
+limit 1
+
+#5. Jumlah seluruh produk dari kategori Furniture
+SELECT count(product_name) as Jumlah FROM `bie-wave-6.Current_Detail_Data.Categories_clean` 
+where category = 'Furniture'
+
+#6. Nama pelanggan yang membeli produk paling banyak (dalam quantity)
+SELECT Customer_Name, sum(Quantity) as Jumlah_Pembelian
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean` as o join `bie-wave-6.Current_Detail_Data.Customer_clean` as c
+On o.Customer_ID = c.Customer_ID
+Group by 1
+Order by 2 desc
+limit 1
+
+#7. Nama pelanggan yang paling sering melakukan repeat order
+
+#8. Dari kota mana pelanggan yang paling sering melakukan repeat order
+
+#9. Order mana yang mendapatkan total discount paling kecil
+
+#10.Total profit yang datang dari produk dengan sub category Furnishings &
+Supplies
+
+#11. Jumlah order yang berasal dari produk warna hitam (terdapat keterangan
+“black” di nama produknya)
+
+#12.Jumlah order yang memiliki waktu pengiriman masih di hari yang sama dengan
+waktu pemesanan
