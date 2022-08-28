@@ -95,16 +95,76 @@ Order by 2 desc
 limit 1
 
 #7. Nama pelanggan yang paling sering melakukan repeat order
+SELECT Customer_Name, count(Order_ID)-1 As jumlah_RO
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean` as o join `bie-wave-6.Current_Detail_Data.Customer_clean` as c
+On o.Customer_ID = c.Customer_ID
+Group by 1
+Order by 2 desc
+limit 1
 
 #8. Dari kota mana pelanggan yang paling sering melakukan repeat order
+with tabel as
+(SELECT Customer_Name, City, count(Order_ID)-1 As jumlah_RO
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean` as o join `bie-wave-6.Current_Detail_Data.Customer_clean` as c
+On o.Customer_ID = c.Customer_ID
+group by 1,2)
+select City, sum(tabel.jumlah_RO) as Repeat_Order
+from tabel 
+group by 1
+order by 2 desc
+limit 1
 
 #9. Order mana yang mendapatkan total discount paling kecil
+Select *
+from (SELECT Order_ID, Sales/Quantity*Discount as Total_Diskon
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean`)
+Where Total_Diskon > 0 
+order by 2
+limit 1
 
 #10.Total profit yang datang dari produk dengan sub category Furnishings &
 Supplies
+SELECT sum(Profit) as Jumlah_Profit
+from (Select sub_category, Profit
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean` as o join `bie-wave-6.Current_Detail_Data.Categories_clean` as c
+on o.Product_ID = c.product_id
+where sub_category = 'Furnishings' or sub_category = 'Supplies')
 
-#11. Jumlah order yang berasal dari produk warna hitam (terdapat keterangan
-“black” di nama produknya)
+#11. Jumlah order yang berasal dari produk warna hitam (terdapat keterangan “black” di nama produknya)
+Select count(Order_ID)
+from(Select Order_ID, product_name
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean` as o join `bie-wave-6.Current_Detail_Data.Categories_clean` as c
+on o.Product_ID = c.product_id
+where product_name like '%black%')
 
 #12.Jumlah order yang memiliki waktu pengiriman masih di hari yang sama dengan
 waktu pemesanan
+Select count(Order_ID) as jumlah_order
+from(Select Order_ID, Order_Date, Ship_Date
+FROM `bie-wave-6.Current_Detail_Data.Orders_clean`
+where Order_Date = Ship_Date)
+
+##Soal Tambahan
+#Link soal (https://s3.ap-southeast-1.amazonaws.com/kinobi-asset-stg/upload/1656901408887-BI%20Engineer_Analyst%20SQL%20Mock%20Test-pages-2-4.pdf)
+#SQL Test 2 (Optional)
+Write a SQL query to select the 2nd highest salary in the engineering department. If
+more than one person shares the highest salary, the query should select the next
+highest salary.
+#Query
+Select salary 
+from(Select name, rank() over (partition by name order by salary) as rankingsalary 
+from employees as e left join departments as d
+on e.id = d.id
+where name = 'engineering')
+where rankingsalary = 2
+
+#SQL Test 3 (Opsional)
+We’re given two tables, a users table with demographic information and the
+neighborhood they live in and a neighborhoods table.
+Write a query that returns all neighborhoods that have 0 users
+#Query
+SELECT name FROM neighborhood as n
+where not exists (select 3 from users as u
+                  where n.id = u.neighborhood_id)
+
+
