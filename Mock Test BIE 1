@@ -1,0 +1,69 @@
+#Pengerjaan Mock Test ini menggunakan BigQuery
+#Soal
+PT VWXYZ mencatat transaksi hariannya di sheet dengan mengelompokkan data
+menjadi kategori Order, Product dan Customers seperti di link dibawah ini
+Dataset Superstore - BI Analyst (https://docs.google.com/spreadsheets/d/1IL0m7fCMmN7ZmWQl5mF_tmCEigvwm1rCfVMdFXvXH1s/edit#gid=1252260284)
+Keterangan :
+- Tabel Order berisi daftar pesanan customer disertai barang yang dipesan
+- Tabel Categories berisi daftar barang dan identitasnya yang tersedia dan dijual di
+PT VWXYZ
+- Tabel Customers berisi daftar pelanggan dan identitasnya yang sudah
+melakukan pemesanan
+Perusahaan ingin membentuk metrics berdasarkan data tersebut menggunakan SQL.
+Pertanyaan :
+Buatlah SQL Statement untuk menampilkan metrics perusahaan dibawah ini :
+1. Jumlah seluruh produk yang terjual
+2. Jumlah unique customer yang telah memesan produk
+3. Rata-rata profit dari seluruh order (dalam mata uang)
+4. Berapa discount terkecil dari seluruh order
+5. Jumlah seluruh produk dari kategori Furniture
+6. Nama pelanggan yang membeli produk paling banyak (dalam quantity)
+7. Nama pelanggan yang paling sering melakukan repeat order
+8. Dari kota mana pelanggan yang paling sering melakukan repeat order
+9. Order mana yang mendapatkan total discount paling kecil
+10.Total profit yang datang dari produk dengan sub category Furnishings &
+Supplies
+11. Jumlah order yang berasal dari produk warna hitam (terdapat keterangan
+“black” di nama produknya)
+12.Jumlah order yang memiliki waktu pengiriman masih di hari yang sama dengan
+waktu pemesanan
+
+#Tahap Pertama yakni pembersihan data terlebih dahulu
+
+#Tabel Order (Pada tabel ini terdapat data null dan pada kolom Region terdapat incosistent data
+with hiya as (SELECT Row_ID,	Order_ID,	Order_Date,	Ship_Date,	Ship_Mode	,Customer_ID	,Country	,City,	State,	Postal_Code, 
+replace (Region, 'Southn', 'South') as Region,	Product_ID,	Sales,	Quantity,	Discount,	Profit
+FROM `bie-wave-6.Gold_Challenge.Orders`
+where Row_ID is not null)
+Select * from hiya
+order by Row_ID
+
+#Tabel Categories (Pada tabel ini terdapat incosistant data, duplicate, dan perbaikan isi kolom product_name yang seharusnya berupa unique values seperti pada tabel product_id) 
+with hiya as (with tabel as
+(SELECT *
+ from (select product_id 
+              , replace(category,  'Office Supply', 'Office Supplies') as category
+              , sub_category
+              , product_name
+              ,row_number() over(partition by product_id) as row_num FROM `bie-wave-6.Gold_Challenge.Categories`)
+              ) 
+select  
+    product_id 
+    ,category 
+    ,sub_category
+    ,product_name
+from Tabel
+where
+    1=1
+    and  row_num = 1)
+
+SELECT  product_id 
+    ,category 
+    ,sub_category
+    ,concat(product_id,' ',product_name) as product_name
+     FROM hiya
+     order by 1
+ 
+#Tabel Customer (Tabel ini sudah memiliki kualitas data yang baik sehingga tidak perlu diperbaiki)
+
+
