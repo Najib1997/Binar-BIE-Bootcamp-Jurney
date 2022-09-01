@@ -30,7 +30,7 @@ waktu pemesanan
 
 #Tahap Pertama yakni pembersihan data terlebih dahulu
 
-#Tabel Order (Pada tabel ini terdapat data null dan pada kolom Region terdapat incosistent data
+#Tabel Order (Pada tabel ini terdapat data null dan pada kolom Region terdapat incosistent data)
 with hiya as (SELECT Row_ID,	Order_ID,	Order_Date,	Ship_Date,	Ship_Mode	,Customer_ID	,Country	,City,	State,	Postal_Code, 
 replace (Region, 'Southn', 'South') as Region,	Product_ID,	Sales,	Quantity,	Discount,	Profit
 FROM `bie-wave-6.Gold_Challenge.Orders`
